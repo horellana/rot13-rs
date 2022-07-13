@@ -1,4 +1,5 @@
 use std::io;
+use std::process;
 
 const ASCII_TABLE_LENGTH: usize = 127;
 
@@ -42,6 +43,11 @@ fn main() {
 
         if let Ok(line) = line_result {
             for character in line.chars() {
+                if (character as usize) > 127 || (character as usize) < 0 {
+                    eprintln!("Invalid character: {}", character);
+                    process::exit(1);
+                }
+
                 print!("{}", ASCII_TABLE[character as usize] as char);
             }
         }
