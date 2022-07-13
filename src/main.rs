@@ -2,6 +2,7 @@ use std::io;
 use std::process;
 
 const ASCII_TABLE_LENGTH: usize = 127;
+const ASCII_TABLE: [u8; ASCII_TABLE_LENGTH] = generate_cipher_table();
 
 const fn get_cipher_index(index: u8) -> u8 {
     let mut character_index: u8 = index;
@@ -32,23 +33,22 @@ const fn generate_cipher_table() -> [u8; ASCII_TABLE_LENGTH]  {
     table
 }
 
-const ASCII_TABLE: [u8; ASCII_TABLE_LENGTH] = generate_cipher_table();
-
 fn main() {
     for line_result in std::io::stdin().lines() {
-        if let Err(line) = line_result {
-            eprintln!("Could not read from stdin");
-            return;
-        }
+        match line_result {
+            Ok(line) => {
+                for character in line.chars() {
+                    if (character as usize) > 127 || (character as usize) < 0 {
+                        eprintln!("Invalid character: {}", character);
+                        process::exit(1);
+                    }
 
-        if let Ok(line) = line_result {
-            for character in line.chars() {
-                if (character as usize) > 127 || (character as usize) < 0 {
-                    eprintln!("Invalid character: {}", character);
-                    process::exit(1);
+                    print!("{}", ASCII_TABLE[character as usize] as char);
                 }
-
-                print!("{}", ASCII_TABLE[character as usize] as char);
+            },
+            Err(_) => {
+                eprintln!("Could not read from stdin");
+                process::exit(1);
             }
         }
     }
